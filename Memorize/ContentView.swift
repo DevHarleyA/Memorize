@@ -10,10 +10,6 @@ import SwiftUI
 struct ContentView: View {
     @State var emojis = ["✈️", "🚗", "🚂", "🚀", "🚌", "🚙", "🚕", "🏎", "🚜", "🚐", "🛻", "🚒", "🚚", "🚛", "🏍", "🛸", "🚁", "🚆", "🚎", "🚓", "🛵", "🛳", "🚘", "🚖 "]
     @State var emojiCount = Int.random(in: 8...24)
-
-    // 4-9 --> 85
-    // 10-16 --> 80
-    // 17-24 --> 65
     
     var body: some View {
         VStack {
@@ -24,7 +20,6 @@ struct ContentView: View {
                     // LazyVGrid uses all width horizontally, vertically it makes the cards as small as possible so it can make as many as possible
                     // GridItems allows you to set adaptive so it looks good in portrait and landscape mode
                     LazyVGrid(columns:
-                            // TODO: Try to come up with some sort of equation that relates the number of cards in the game to the width you pass when you create your LazyVGrid’s GridItem(.adaptive(minimum:maximum:)) such that each time a theme button is chosen, the LazyVGrid makes the cards as big as possible without having to scroll.
                             [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
                         // id helps uniquely identify each view the foreach makes
                         ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
