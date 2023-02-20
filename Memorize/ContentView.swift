@@ -9,8 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @State var emojis = ["✈️", "🚗", "🚂", "🚀", "🚌", "🚙", "🚕", "🏎", "🚜", "🚐", "🛻", "🚒", "🚚", "🚛", "🏍", "🛸", "🚁", "🚆", "🚎", "🚓", "🛵", "🛳", "🚘", "🚖 "]
-    @State var emojiCount = Int.random(in: 8...20)
+    @State var emojiCount = Int.random(in: 8...24)
 
+    // 4-9 --> 85
+    // 10-16 --> 80
+    // 17-24 --> 65
+    
     var body: some View {
         VStack {
             ScrollView {
@@ -21,7 +25,7 @@ struct ContentView: View {
                     // GridItems allows you to set adaptive so it looks good in portrait and landscape mode
                     LazyVGrid(columns:
                             // TODO: Try to come up with some sort of equation that relates the number of cards in the game to the width you pass when you create your LazyVGrid’s GridItem(.adaptive(minimum:maximum:)) such that each time a theme button is chosen, the LazyVGrid makes the cards as big as possible without having to scroll.
-                            [GridItem(.adaptive(minimum: 65))]) {
+                            [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
                         // id helps uniquely identify each view the foreach makes
                         ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
                             CardView(content: emoji).aspectRatio(2/3, contentMode: .fit)
@@ -35,9 +39,6 @@ struct ContentView: View {
                 animalTheme
                 natureTheme
                 vehicleTheme
-//                remove
-//                Spacer()
-//                add
             }
             .font(.largeTitle)
             .padding(.horizontal)
@@ -68,9 +69,9 @@ struct ContentView: View {
     
     var animalTheme: some View {
         Button {
-            emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🦄", "🐥", "🐙", "🐢", "🦀"]
-            emojis.shuffled()
-            emojiCount = Int.random(in: 8...20)
+            emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🦄", "🐥", "🐙", "🐢", "🦀", "🦧", "🐳", "🦭", "🦞"]
+            emojis = emojis.shuffled()
+            emojiCount = Int.random(in: 8...24)
             
         } label: {
             VStack {
@@ -83,9 +84,9 @@ struct ContentView: View {
     
     var natureTheme: some View {
         Button {
-            emojis = ["🌵", "🌲", "🌳", "🌴", "🪵", "🌱", "☘️", "🍀", "🍁", "🌷", "🌺", "🌸", "🌼", "🌙", "❄️", "☀️", "🌿", "🪴", "🍄", "🌹"]
-            emojis.shuffled()
-            emojiCount = Int.random(in: 8...20)
+            emojis = ["🌵", "🌲", "🌳", "🌴", "🪵", "🌱", "☘️", "🍀", "🍁", "🌷", "🌺", "🌸", "🌼", "🌙", "❄️", "☀️", "🌿", "🪴", "🍄", "🌹", "⭐️", "🔥", "🌧️", "🌊"]
+            emojis = emojis.shuffled()
+            emojiCount = Int.random(in: 8...24)
         } label: {
             VStack {
                 Text("Nature\n Theme")
@@ -97,14 +98,24 @@ struct ContentView: View {
     var vehicleTheme: some View {
         Button {
             emojis = ["✈️", "🚗", "🚂", "🚀", "🚌", "🚙", "🚕", "🏎", "🚜", "🚐", "🛻", "🚒", "🚚", "🚛", "🏍", "🛸", "🚁", "🚆", "🚎", "🚓", "🛵", "🛳", "🚘", "🚖 "]
-            emojis.shuffled()
-            emojiCount = Int.random(in: 8...20)
+            emojis = emojis.shuffled()
+            emojiCount = Int.random(in: 8...24)
         } label: {
             VStack {
                 Text("Vehicle\n Theme")
                     .font(.subheadline)
                 Image(systemName: "car.circle")
             }
+        }
+    }
+    
+    func widthThatFitsBest() -> CGFloat {
+        if emojiCount <= 24 && emojiCount >= 17 {
+            return 65
+        } else if emojiCount <= 16 && emojiCount >= 10 {
+            return 80
+        } else {
+            return 85
         }
     }
 }
