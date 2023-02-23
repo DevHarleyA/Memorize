@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var emojis = ["✈️", "🚗", "🚂", "🚀", "🚌", "🚙", "🚕", "🏎", "🚜", "🚐", "🛻", "🚒", "🚚", "🚛", "🏍", "🛸", "🚁", "🚆", "🚎", "🚓", "🛵", "🛳", "🚘", "🚖 "]
+    
     @State var emojiCount = Int.random(in: 8...24)
     
     var body: some View {
@@ -20,7 +20,7 @@ struct ContentView: View {
                     // LazyVGrid uses all width horizontally, vertically it makes the cards as small as possible so it can make as many as possible
                     // GridItems allows you to set adaptive so it looks good in portrait and landscape mode
                     LazyVGrid(columns:
-                            [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
+                                [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
                         // id helps uniquely identify each view the foreach makes
                         ForEach(emojis[0..<emojiCount], id: \.self) { emoji in
                             CardView(content: emoji).aspectRatio(2/3, contentMode: .fit)
@@ -40,7 +40,7 @@ struct ContentView: View {
         }
         .padding(.horizontal)
     }
-
+    
     var remove: some View {
         Button {
             if emojiCount > 1 {
@@ -50,7 +50,7 @@ struct ContentView: View {
             Image(systemName: "minus.circle")
         }
     }
-
+    
     var add: some View {
         Button {
             if emojiCount < emojis.count {
@@ -120,7 +120,7 @@ struct CardView: View {
     // variable must always have a value, if not set in view, creator will have to define above
     // creator wins if you provide default value and they provide a different value in function call
     @State var isFaceUp: Bool = true
-
+    
     var body: some View {
         ZStack {
             // local variable/constant
