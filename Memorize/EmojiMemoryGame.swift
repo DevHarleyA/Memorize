@@ -10,7 +10,8 @@ import SwiftUI
 
 // viewmodel is a class (object-oriented)
 // protects the model, only view model has access to model
-class EmojiMemoryGame {
+// observableobject => it publishes to the world that something changed every time our model changes
+class EmojiMemoryGame: ObservableObject {
     
     // static makes it like a global variable.
     static let emojis = ["✈️", "🚗", "🚂", "🚀", "🚌", "🚙", "🚕", "🏎", "🚜", "🚐", "🛻", "🚒", "🚚", "🚛", "🏍", "🛸", "🚁", "🚆", "🚎", "🚓", "🛵", "🛳", "🚘", "🚖 "]
@@ -22,9 +23,15 @@ class EmojiMemoryGame {
         }
     }
 
-    private var model: MemoryGame<String> = createMemoryGame()
+    @Published private var model: MemoryGame<String> = createMemoryGame()
     
     var cards: Array<MemoryGame<String>.Card> {
         return model.cards
+    }
+    
+    // MARK: - Intent(s)
+    
+    func choose(_ card: MemoryGame<String>.Card) {
+        model.choose(card)
     }
 }
