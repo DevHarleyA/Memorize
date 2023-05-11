@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-@main
+@main // main program
 struct MemorizeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView() // This is the thing that describes what our app looks like
         }
     }
 }
