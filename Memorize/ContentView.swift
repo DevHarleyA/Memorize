@@ -19,7 +19,7 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
                         ForEach(emojis[0..<emojiCount], id: \.self){ emoji in
                             CardView(content: emoji).aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
                         }
@@ -101,6 +101,16 @@ struct ContentView: View {
     func randomizeCards() {
         emojis.shuffle()
         emojiCount = Int.random(in: 4..<emojis.count)
+    }
+    
+    func widthThatFitsBest() -> CGFloat {
+        if emojiCount <= 24 && emojiCount >= 17 {
+            return 65
+        } else if emojiCount <= 16 && emojiCount >= 10 {
+            return 80
+        } else {
+            return 85
+        }
     }
 }
 
