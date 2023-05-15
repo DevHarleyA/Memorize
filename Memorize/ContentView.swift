@@ -8,48 +8,109 @@
 import SwiftUI
 
 struct ContentView: View {
-    var emojis = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
-    @State var emojiCount = 4
+    @State var emojis = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+    var animalEmojis = ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"]
+    var natureEmojis = ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"]
+    var sportsEmojis = ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"]
+    var flagEmojis = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+    @State var emojiCount = Int.random(in: 4..<24)
     
     var body: some View {
-        VStack {
-            ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-                    ForEach(emojis[0..<emojiCount], id: \.self){ emoji in
-                        CardView(content: emoji).aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
+        NavigationView {
+            VStack {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
+                        ForEach(emojis[0..<emojiCount], id: \.self){ emoji in
+                            CardView(content: emoji).aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
+                        }
                     }
                 }
-            }
-            .foregroundColor(.red)
-            Spacer()
-            HStack {
-                remove
+                .foregroundColor(.red)
+                .padding(5)
                 Spacer()
-                add
+                            HStack {
+                                VStack {
+                                    animalButton
+                                    Text("Animals")
+                                        .font(.title3)
+                                }
+                                Spacer()
+                                VStack {
+                                    natureButton
+                                    Text("Nature")
+                                        .font(.title3)
+                                }
+                                Spacer()
+                                VStack {
+                                    sportButton
+                                    Text("Sports")
+                                        .font(.title3)
+                                }
+                                Spacer()
+                                VStack {
+                                    flagButton
+                                    Text("Flags")
+                                        .font(.title3)
+                                }
+                            }
+                    .padding(.horizontal)
+                    .font(.largeTitle)
             }
-            .padding(.horizontal)
-            .font(.largeTitle)
+            .navigationTitle("Memorize!")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
-    var remove: some View {
+    var animalButton: some View {
         Button(action: {
-            if emojiCount > 1 {
-                emojiCount -= 1
-            }
+            emojis = animalEmojis
+            randomizeCards()
+            
         }, label: {
-            Image(systemName: "minus.circle")
+            Image(systemName: "pawprint.circle.fill")
         })
     }
     
-    var add: some View {
+    var natureButton: some View {
         Button(action: {
-            if emojiCount < emojis.count {
-                emojiCount += 1
-            }
+            emojis = natureEmojis
+            randomizeCards()
         }, label: {
-            Image(systemName: "plus.circle")
+            Image(systemName: "mountain.2.circle.fill")
         })
+    }
+    
+    var flagButton: some View {
+        Button(action: {
+            emojis = flagEmojis
+            randomizeCards()
+        }, label: {
+            Image(systemName: "flag.circle.fill")
+        })
+    }
+    
+    var sportButton: some View {
+        Button(action: {
+            emojis = sportsEmojis
+            randomizeCards()
+        }, label: {
+            Image(systemName: "figure.run.circle.fill")
+        })
+    }
+    
+    func randomizeCards() {
+        emojis.shuffle()
+        emojiCount = Int.random(in: 4..<emojis.count)
+    }
+    
+    func widthThatFitsBest() -> CGFloat {
+        if emojiCount <= 24 && emojiCount >= 17 {
+            return 65
+        } else if emojiCount <= 16 && emojiCount >= 10 {
+            return 80
+        } else {
+            return 85
+        }
     }
 }
 
@@ -71,6 +132,7 @@ struct CardView: View {
         .onTapGesture {
             isFaceUp.toggle()
         }
+        // How can I toggle isFaceUp back to true when the emojis change?
     }
 }
 
