@@ -8,154 +8,57 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var emojis = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
-    var animalEmojis = ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"]
-    var natureEmojis = ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"]
-    var sportsEmojis = ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"]
-    var flagEmojis = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
-    @State var emojiCount = Int.random(in: 4..<24)
+    @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
         NavigationView {
-            VStack {
                 ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
-                        ForEach(emojis[0..<emojiCount], id: \.self){ emoji in
-                            CardView(content: emoji).aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
+                        ForEach(viewModel.cards){ card in
+                            CardView(card: card)
+                                .aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
+                                .onTapGesture {
+                                    viewModel.choose(card)
+                                }
                         }
                     }
                 }
                 .foregroundColor(.red)
                 .padding(5)
                 Spacer()
-                            HStack {
-                                VStack {
-                                    animalButton
-                                    Text("Animals")
-                                        .font(.title3)
-                                }
-                                Spacer()
-                                VStack {
-                                    natureButton
-                                    Text("Nature")
-                                        .font(.title3)
-                                }
-                                Spacer()
-                                VStack {
-                                    sportButton
-                                    Text("Sports")
-                                        .font(.title3)
-                                }
-                                Spacer()
-                                VStack {
-                                    flagButton
-                                    Text("Flags")
-                                        .font(.title3)
-                                }
-                            }
-                    .padding(.horizontal)
-                    .font(.largeTitle)
-            }
-            .navigationTitle("Memorize!")
-            .navigationBarTitleDisplayMode(.inline)
         }
-    }
-    
-    var animalButton: some View {
-        Button(action: {
-            emojis = animalEmojis
-            randomizeCards()
-            
-        }, label: {
-            Image(systemName: "pawprint.circle.fill")
-        })
-    }
-    
-    var natureButton: some View {
-        Button(action: {
-            emojis = natureEmojis
-            randomizeCards()
-        }, label: {
-            Image(systemName: "mountain.2.circle.fill")
-        })
-    }
-    
-    var flagButton: some View {
-        Button(action: {
-            emojis = flagEmojis
-            randomizeCards()
-        }, label: {
-            Image(systemName: "flag.circle.fill")
-        })
-    }
-    
-    var sportButton: some View {
-        Button(action: {
-            emojis = sportsEmojis
-            randomizeCards()
-        }, label: {
-            Image(systemName: "figure.run.circle.fill")
-        })
-    }
-    
-    func randomizeCards() {
-        emojis.shuffle()
-        emojiCount = Int.random(in: 4..<emojis.count)
-    }
-    
-    func widthThatFitsBest() -> CGFloat {
-        if emojiCount <= 24 && emojiCount >= 17 {
-            return 65
-        } else if emojiCount <= 16 && emojiCount >= 10 {
-            return 80
-        } else {
-            return 85
-        }
+        .navigationTitle("Memorize!")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 struct CardView: View {
-    var content: String
-    @State var isFaceUp: Bool = true
+    let card: MemoryGame<String>.Card // card can not change, don't make it a var unless you use @State
     
     var body: some View {
         ZStack {
             let shape = RoundedRectangle(cornerRadius: 20)
-            if isFaceUp {
+            if card.isFaceUp {
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: 3)
-                Text(content).font(.largeTitle)
+                Text(card.content).font(.largeTitle)
+            } else if card.isMatched {
+                // make the cards fully transparent if matched, maintain space card takes up
+                shape.opacity(0)
             } else {
                 shape.fill()
             }
         }
-        .onTapGesture {
-            isFaceUp.toggle()
-        }
-        // How can I toggle isFaceUp back to true when the emojis change?
     }
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        let game = EmojiMemoryGame()
+        ContentView(viewModel: game)
             .preferredColorScheme(.dark)
-        ContentView()
+        ContentView(viewModel: game)
             .preferredColorScheme(.light)
     }
 }
