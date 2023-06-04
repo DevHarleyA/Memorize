@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Memorize
+//  Memorize View
 //
 //  Created by Alexandra Harley on 5/10/23.
 //
