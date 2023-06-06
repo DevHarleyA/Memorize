@@ -7,13 +7,21 @@
 
 import Foundation
 
-// Don't care type has to behave like an equatable, solves error on line 24 that wouldn't let us compare the card content
 struct MemoryGame<CardContent> where CardContent: Equatable {
+    
     private(set) var cards: Array<Card> // "set" allows read, but not write
+    private var indexOfTheOneAndOnlyFaceUpCard: Int?
     
-    private var indexOfTheOneAndOnlyFaceUpCard: Int? // nil until we have a value,
+    init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
+        cards = Array<Card>()
+        // add numberOfPairsOfCards x 2 cards to cards array
+        for pairIndex in 0..<numberOfPairsOfCards {
+            let content: CardContent = createCardContent(pairIndex)
+            cards.append(Card(content: content, id: pairIndex*2))
+            cards.append(Card(content: content, id: pairIndex*2+1))
+        }
+    }
     
-    // mutating tells the world that calling this function will change something
     mutating func choose(_ card: Card) {
         // use comma to separate if let to set order, && won't work here
         if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),
@@ -47,16 +55,6 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         return 0
     }
     
-    init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        cards = Array<Card>()
-        // add numberOfPairsOfCards x 2 cards to cards array
-        for pairIndex in 0..<numberOfPairsOfCards {
-            let content: CardContent = createCardContent(pairIndex)
-            cards.append(Card(content: content, id: pairIndex*2))
-            cards.append(Card(content: content, id: pairIndex*2+1))
-        }
-    }
-    
     // structs within struct --> Mostly something to do with the naming
     struct Card: Identifiable {
         var isFaceUp = false
@@ -64,4 +62,62 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         var content: CardContent
         var id: Int
     }
+}
+
+struct Theme {
+    var name: String
+    var emoji: [String]
+    var numberOfPairs: Int
+    var color: String
+    let colorOptions = ["red", "orange", "yellow", "green", "mint", "teal", "cyan", "blue", "indigo", "purple", "pink"]
+    
+    // initializer
+    // TODO: initiate theme based on name alone
+    init() {
+        let themeOptions = ["animal", "flag", "nature", "sports"]
+        var name = themeOptions.randomElement()
+        
+        switch name {
+        case "animal":
+            self.name = "Animals"
+            self.emoji = ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"]
+        case "flag":
+            self.name = "Country Flags"
+            self.emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+        case "nature":
+            self.name = "Nature"
+            self.emoji = ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"]
+        case "sports":
+            self.name = "Sports"
+            self.emoji = ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"]
+        default:
+            self.name = "Country Flags"
+            self.emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+        }
+        self.emoji = emoji.shuffled()
+        self.numberOfPairs = Int.random(in: 0..<emoji.count)
+        // if cards are brown, one may be spelled incorrectly
+        self.color = colorOptions.randomElement() ?? "brown"
+    }
+    
+    mutating func changeTheme(to theme: String) {
+        switch theme {
+        case "animal":
+            name = "Animals"
+            emoji = ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"]
+        case "flag":
+             name = "Country Flags"
+             emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+        case "nature":
+             name = "Nature"
+             emoji = ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"]
+        case "sports":
+             name = "Sports"
+             emoji = ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"]
+        default:
+            name = "Country Flags"
+            emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+        }
+    }
+    
 }

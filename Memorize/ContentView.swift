@@ -16,7 +16,7 @@ struct ContentView: View {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
                         ForEach(viewModel.cards){ card in
                             CardView(card: card)
-                                .aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
+                                .aspectRatio(2/3, contentMode: .fit)
                                 .onTapGesture {
                                     viewModel.choose(card)
                                 }
@@ -33,7 +33,7 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    let card: MemoryGame<String>.Card // card can not change, don't make it a var unless you use @State
+    let card: MemoryGame<String>.Card
     
     var body: some View {
         ZStack {
@@ -43,7 +43,6 @@ struct CardView: View {
                 shape.strokeBorder(lineWidth: 3)
                 Text(card.content).font(.largeTitle)
             } else if card.isMatched {
-                // make the cards fully transparent if matched, maintain space card takes up
                 shape.opacity(0)
             } else {
                 shape.fill()
