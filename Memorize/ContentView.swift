@@ -23,7 +23,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                .foregroundColor(.red)
+                .foregroundColor(Color(viewModel.cardColor))
                 .padding(5)
                 Spacer()
         }

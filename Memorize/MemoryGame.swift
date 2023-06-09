@@ -19,6 +19,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
             let content: CardContent = createCardContent(pairIndex)
             cards.append(Card(content: content, id: pairIndex*2))
             cards.append(Card(content: content, id: pairIndex*2+1))
+            cards.shuffle()
         }
     }
     
@@ -69,55 +70,45 @@ struct Theme {
     var emoji: [String]
     var numberOfPairs: Int
     var color: String
-    let colorOptions = ["red", "orange", "yellow", "green", "mint", "teal", "cyan", "blue", "indigo", "purple", "pink"]
     
-    // initializer
-    // TODO: initiate theme based on name alone
-    init() {
-        let themeOptions = ["animal", "flag", "nature", "sports"]
-        var name = themeOptions.randomElement()
-        
-        switch name {
-        case "animal":
-            self.name = "Animals"
-            self.emoji = ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"]
-        case "flag":
-            self.name = "Country Flags"
-            self.emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
-        case "nature":
-            self.name = "Nature"
-            self.emoji = ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"]
-        case "sports":
-            self.name = "Sports"
-            self.emoji = ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"]
-        default:
-            self.name = "Country Flags"
-            self.emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+    let colorOptions = ["red", "orange", "yellow", "green", "mint", "teal", "cyan", "blue", "indigo", "purple", "pink", "brown"]
+    let themeOptions = ["animal", "flag", "nature", "sports", "emojis", "food"]
+    let emojiDictionary = [
+        "animal": ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"],
+        "flag": ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"],
+        "nature": ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"],
+        "sports": ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"],
+        "emojis": ["🥲","😊","😘","😜","🥳","😤","😭","😢","😱","🥶","🤯","😶‍🌫️","🤫","🫠","🥺","🤓","🫥","😵‍💫","🙄","😈"],
+        "food": ["🍎","🫛","🫐","🥔","🥐","🥚","🍔","🥗","🍕","🥨","🌭","🌮","🍤","🎂","🍩","🍫","🍣"]
+    ]
+    
+    init(name: String) {
+        if name == "random" {
+            let randomTheme = Array(emojiDictionary.keys).randomElement()!
+            self.name = randomTheme
+            self.emoji = emojiDictionary[randomTheme]!
+        } else {
+            self.name = name
+            self.emoji = emojiDictionary[name]!
         }
+        
         self.emoji = emoji.shuffled()
-        self.numberOfPairs = Int.random(in: 0..<emoji.count)
+        // TODO: [OPTIONAL] Use tertiary operator to either assign a random amount or set amount
+        self.numberOfPairs = Int.random(in: 2..<emoji.count)
         // if cards are brown, one may be spelled incorrectly
         self.color = colorOptions.randomElement() ?? "brown"
     }
     
-    mutating func changeTheme(to theme: String) {
-        switch theme {
-        case "animal":
-            name = "Animals"
-            emoji = ["🐶","🐱","🐭", "🐹", "🐰","🦊","🐻", "🐼", "🐻‍❄️","🐨","🐯", "🦁", "🐮","🐷","🐸", "🐵"]
-        case "flag":
-             name = "Country Flags"
-             emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
-        case "nature":
-             name = "Nature"
-             emoji = ["🌵","🌲","🌴", "☘️", "🎋","🌺","🌸", "🌼", "🌪️","🌦️","🌞", "❄️"]
-        case "sports":
-             name = "Sports"
-             emoji = ["🏂","🏋🏾‍♀️","🤸🏾‍♀️", "🤺","⛹🏾‍♂️","🏌🏾‍♀️","🧘🏾‍♀️", "🤾🏾‍♀️","🏇🏾","🤽🏾‍♀️","🏄🏾‍♀️", "🚣🏾‍♀️","🧗🏾‍♀️","🚴🏾‍♀️","🚵🏾‍♀️", "🥇","🏀","🏈","⚾️", "🎾"]
-        default:
-            name = "Country Flags"
-            emoji = ["🇯🇲", "🇫🇷", "🇺🇸", "🇰🇷", "🇬🇧", "🏳️‍🌈", "🇧🇸", "🇨🇦", "🇧🇷", "🇧🇪", "🇨🇮", "🇪🇨", "🇨🇺", "🇮🇹", "🇮🇷", "🇯🇵", "🇰🇪", "🇳🇴", "🇿🇦", "🇸🇪", "🇹🇹", "🇺🇦", "🇰🇳", "🇪🇸"]
+    // TODO: refactor into safe unwrap with default assignment if not (want to avoid more force unwrap)
+    mutating func chooseTheme(to theme: String) {
+        if theme == "random" {
+            name = Array(emojiDictionary.keys).randomElement()!
+            emoji = emojiDictionary[name]!
+        } else {
+            name = theme
+            emoji = emojiDictionary[theme]!
         }
+
     }
     
 }
