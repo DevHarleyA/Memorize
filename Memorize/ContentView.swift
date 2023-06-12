@@ -11,29 +11,60 @@ struct ContentView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     
     var body: some View {
-        NavigationView {
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-                        ForEach(viewModel.cards){ card in
-                            CardView(card: card)
-                                .aspectRatio(2/3, contentMode: .fit) //fits as we add more columns to 2/3 ratio
-                                .onTapGesture {
-                                    viewModel.choose(card)
-                                }
-                        }
-                    }
+        ScrollView {
+            VStack{
+                Text("Memorize Game")
+                    .font(.title)
+                HStack {
+                    Text(viewModel.themeName)
+                        .font(.title2)
+                    Text("\(viewModel.score)")
                 }
-                .foregroundColor(.red)
-                .padding(5)
-                Spacer()
+            }
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
+                ForEach(viewModel.cards){ card in
+                    CardView(card: card)
+                        .aspectRatio(2/3, contentMode: .fit)
+                        .onTapGesture {
+                            viewModel.choose(card)
+                        }
+                }
+            }
+            newGameButton
         }
-        .navigationTitle("Memorize!")
-        .navigationBarTitleDisplayMode(.inline)
+        .foregroundColor(Color(viewModel.cardColor))
+        .padding(5)
+        Spacer()
     }
+    
+    // TODO: Create new game button that chooses a random theme every time
+    var newGameButton: some View {
+        Button("New Game",
+               action: {
+            viewModel.createMemoryGame(with: "random")
+        })
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .padding()
+        .font(.subheadline)
+    }
+    
+    func widthThatFitsBest() -> CGFloat {
+        let emojiCount = viewModel.themeNumberOfCards
+        if emojiCount >= 17 {
+            return 50
+        } else if emojiCount <= 16 && emojiCount >= 10 {
+            return 60
+        } else {
+            return 70
+        }
+    }
+    
+    // TODO: Add score keeping to game and display in View
 }
 
 struct CardView: View {
-    let card: MemoryGame<String>.Card // card can not change, don't make it a var unless you use @State
+    let card: MemoryGame<String>.Card
     
     var body: some View {
         ZStack {
@@ -43,7 +74,6 @@ struct CardView: View {
                 shape.strokeBorder(lineWidth: 3)
                 Text(card.content).font(.largeTitle)
             } else if card.isMatched {
-                // make the cards fully transparent if matched, maintain space card takes up
                 shape.opacity(0)
             } else {
                 shape.fill()
