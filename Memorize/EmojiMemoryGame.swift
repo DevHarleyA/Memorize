@@ -16,6 +16,7 @@ class EmojiMemoryGame: ObservableObject {
         return model.cards
     }
     
+    // Use system colors for light/dark mode adaptation
     var cardColor: UIColor {
         let color = currentTheme.color
         switch color {
@@ -46,6 +47,18 @@ class EmojiMemoryGame: ObservableObject {
         }
     }
     
+    var themeName: String {
+        currentTheme.name
+    }
+    
+    var themeNumberOfCards: Int {
+        currentTheme.emoji.count
+    }
+    
+    var score: Int {
+        model.score
+    }
+    
     init() {
         let theme = Theme(name: "random") // newly declared variable with same name in outer scope = shadow variable
         // self.theme is the class theme
@@ -55,9 +68,10 @@ class EmojiMemoryGame: ObservableObject {
         }
     }
     
-    static func createMemoryGame(with theme: Theme) -> MemoryGame<String> {
-        MemoryGame(numberOfPairsOfCards: Int.random(in: 0..<theme.emoji.count)) { pairIndex in
-            theme.emoji[pairIndex]
+    func createMemoryGame(with name: String) {
+        currentTheme = Theme(name: name)
+        model = MemoryGame(numberOfPairsOfCards: currentTheme.numberOfPairs) { pairIndex in
+            currentTheme.emoji[pairIndex]
         }
     }
     
