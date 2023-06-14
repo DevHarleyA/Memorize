@@ -10,11 +10,14 @@ import Foundation
 struct MemoryGame<CardContent> where CardContent: Equatable {
     
     private(set) var cards: Array<Card> // "set" allows read, but not write
-    private var indexOfTheOneAndOnlyFaceUpCard: Int? // not set when we first start our game. this is the first card we click to find match
+    private var indexOfTheOneAndOnlyFaceUpCard: Int? {
+        get { cards.indices.filter({ cards[$0].isFaceUp }).oneAndOnly } // make computed to prevent this getting out of sync with cards
+        set { cards.indices.forEach { cards[$0].isFaceUp = ($0 == newValue) } }
+    }
     var score = 0
     
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        cards = Array<Card>()
+        cards = [] // swift knows this is an array of cards
         // add numberOfPairsOfCards x 2 cards to cards array
         for pairIndex in 0..<numberOfPairsOfCards {
             let content: CardContent = createCardContent(pairIndex)
@@ -27,8 +30,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     mutating func choose(_ card: Card) {
         // cards begin face down
         if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),  // first index returns anoptional, only proceed if we have an index
-            !cards[chosenIndex].isFaceUp, // only proceed if the card is face down
-            !cards[chosenIndex].isMatched // only proceed if the card is not matched
+           !cards[chosenIndex].isFaceUp, // only proceed if the card is face down
+           !cards[chosenIndex].isMatched // only proceed if the card is not matched
         {
             if let potentialMatchIndex = indexOfTheOneAndOnlyFaceUpCard { // take the second card we chose
                 if cards[chosenIndex].content == cards[potentialMatchIndex].content { // do the two cards match?
@@ -41,11 +44,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     cards[chosenIndex].wasSeen = true // set both cards as seen if no match
                     cards[potentialMatchIndex].wasSeen = true
                 }
-                indexOfTheOneAndOnlyFaceUpCard = nil // if both cards match, set back to nil
+                cards[chosenIndex].isFaceUp = true// if both cards match, set back to nil
             } else { // if no match
-                for index in cards.indices { // turn cards back over
-                    cards[index].isFaceUp = false
-                }
                 indexOfTheOneAndOnlyFaceUpCard = chosenIndex // the first card just chosen gets assigned if we don't have a potential match chosen yet, this makes sure you can't toggle the same card again on line 30 and forces the user to chose a different card
             }
             cards[chosenIndex].isFaceUp.toggle()
@@ -58,8 +58,8 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
         var isFaceUp = false
         var isMatched = false
         var wasSeen = false
-        var content: CardContent
-        var id: Int
+        let content: CardContent
+        let id: Int
     }
 }
 
@@ -85,9 +85,9 @@ struct Theme {
             self.name = name
             self.emoji = emojiDictionary[name]!
         } else { // if theme doesn't exist, randomize the theme
-                let randomTheme = Array(emojiDictionary.keys).randomElement()!
-                self.name = randomTheme
-                self.emoji = emojiDictionary[randomTheme]!
+            let randomTheme = Array(emojiDictionary.keys).randomElement()!
+            self.name = randomTheme
+            self.emoji = emojiDictionary[randomTheme]!
         }
         
         self.emoji = emoji.shuffled()
@@ -106,7 +106,17 @@ struct Theme {
             name = theme
             emoji = emojiDictionary[theme]!
         }
-
+        
     }
     
+}
+
+extension Array {
+    var oneAndOnly: Element? { // Arrays call thier don't cares 'Element'
+        if count == 1 {
+            return first // same as [0]
+        } else {
+            return nil
+        }
+    }
 }
