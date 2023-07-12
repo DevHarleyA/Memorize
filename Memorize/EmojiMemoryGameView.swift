@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct EmojiMemoryGameView: View {
-    @ObservedObject var viewModel: EmojiMemoryGame
+    @ObservedObject var game: EmojiMemoryGame
     
     var body: some View {
         ScrollView {
@@ -16,23 +16,23 @@ struct EmojiMemoryGameView: View {
                 Text("Memorize Game")
                     .font(.title)
                 HStack {
-                    Text(viewModel.themeName)
+                    Text(game.themeName)
                         .font(.title2)
-                    Text("\(viewModel.score)")
+                    Text("\(game.score)")
                 }
             }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
-                ForEach(viewModel.cards){ card in
+                ForEach(game.cards){ card in
                     CardView(card: card)
                         .aspectRatio(2/3, contentMode: .fit)
                         .onTapGesture {
-                            viewModel.choose(card)
+                            game.choose(card)
                         }
                 }
             }
             newGameButton
         }
-        .foregroundColor(Color(viewModel.cardColor))
+        .foregroundColor(Color(game.cardColor))
         .padding(5)
         Spacer()
     }
@@ -40,7 +40,7 @@ struct EmojiMemoryGameView: View {
     var newGameButton: some View {
         Button("New Game",
                action: {
-            viewModel.createMemoryGame(with: "random")
+            game.createMemoryGame(with: "random")
         })
         .buttonStyle(.bordered)
         .buttonBorderShape(.capsule)
@@ -49,7 +49,7 @@ struct EmojiMemoryGameView: View {
     }
     
     func widthThatFitsBest() -> CGFloat {
-        let emojiCount = viewModel.themeNumberOfCards
+        let emojiCount = game.themeNumberOfCards
         if emojiCount >= 17 {
             return 50
         } else if emojiCount <= 16 && emojiCount >= 10 {
@@ -83,9 +83,9 @@ struct CardView: View {
 struct EmojiMemoryGameView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-        EmojiMemoryGameView(viewModel: game)
+        EmojiMemoryGameView(game: game)
             .preferredColorScheme(.dark)
-        EmojiMemoryGameView(viewModel: game)
+        EmojiMemoryGameView(game: game)
             .preferredColorScheme(.light)
     }
 }

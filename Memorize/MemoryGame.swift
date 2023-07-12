@@ -17,7 +17,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     var score = 0
     
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        cards = [] // swift knows this is an array of cards
+        cards = [] // swift knows thi s is an array of cards
         // add numberOfPairsOfCards x 2 cards to cards array
         for pairIndex in 0..<numberOfPairsOfCards {
             let content: CardContent = createCardContent(pairIndex)
