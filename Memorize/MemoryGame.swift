@@ -17,7 +17,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     var score = 0
     
     init(numberOfPairsOfCards: Int, createCardContent: (Int) -> CardContent) {
-        cards = [] // swift knows thi s is an array of cards
+        cards = [] // swift knows this is an array of cards
         // add numberOfPairsOfCards x 2 cards to cards array
         for pairIndex in 0..<numberOfPairsOfCards {
             let content: CardContent = createCardContent(pairIndex)
@@ -29,7 +29,7 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
     
     mutating func choose(_ card: Card) {
         // cards begin face down
-        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),  // first index returns anoptional, only proceed if we have an index
+        if let chosenIndex = cards.firstIndex(where: { $0.id == card.id }),  // first index returns an optional, only proceed if we have an index
            !cards[chosenIndex].isFaceUp, // only proceed if the card is face down
            !cards[chosenIndex].isMatched // only proceed if the card is not matched
         {
@@ -48,7 +48,6 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
             } else { // if no match
                 indexOfTheOneAndOnlyFaceUpCard = chosenIndex // the first card just chosen gets assigned if we don't have a potential match chosen yet, this makes sure you can't toggle the same card again on line 30 and forces the user to chose a different card
             }
-            cards[chosenIndex].isFaceUp.toggle()
             print(score)
         }
     }
