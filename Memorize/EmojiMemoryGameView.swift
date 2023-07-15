@@ -11,20 +11,20 @@ struct EmojiMemoryGameView: View {
     @ObservedObject var game: EmojiMemoryGame
     
     var body: some View {
-        ScrollView {
-            VStack{
-                Text("Memorize Game")
-                    .font(.title)
-                HStack {
-                    Text(game.themeName)
-                        .font(.title2)
-                    Text("\(game.score)")
-                }
+        VStack{
+            Text("Memorize Game")
+                .font(.title)
+            HStack {
+                Text(game.themeName)
+                    .font(.title2)
+                Text("\(game.score)")
             }
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: widthThatFitsBest()))]) {
-                ForEach(game.cards){ card in
+            AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
+                if card.isMatched && !card.isFaceUp {
+                    Rectangle().opacity(0)
+                } else {
                     CardView(card: card)
-                        .aspectRatio(2/3, contentMode: .fit)
+                        .padding(4)
                         .onTapGesture {
                             game.choose(card)
                         }
@@ -34,7 +34,6 @@ struct EmojiMemoryGameView: View {
         }
         .foregroundColor(Color(game.cardColor))
         .padding(5)
-        Spacer()
     }
     
     var newGameButton: some View {
@@ -46,17 +45,6 @@ struct EmojiMemoryGameView: View {
         .buttonBorderShape(.capsule)
         .padding()
         .font(.subheadline)
-    }
-    
-    func widthThatFitsBest() -> CGFloat {
-        let emojiCount = game.themeNumberOfCards
-        if emojiCount >= 17 {
-            return 50
-        } else if emojiCount <= 16 && emojiCount >= 10 {
-            return 60
-        } else {
-            return 70
-        }
     }
 }
 
@@ -70,6 +58,10 @@ struct CardView: View {
                 if card.isFaceUp {
                     shape.fill().foregroundColor(.white)
                     shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                    Pie(startAngle: Angle(degrees: 0-90),
+                        endAngle: Angle(degrees: 110-90))
+                    .padding(5)
+                    .opacity(0.5)
                     Text(card.content)
                         .font(font(in: geometry.size))
                 } else if card.isMatched {
@@ -85,10 +77,11 @@ struct CardView: View {
         Font.system(size: min(size.width, size.height) * DrawingConstants.fontScale)
     }
     
+    // TODO: Move other # values to constants below
     private struct DrawingConstants {
-        static let cornerRadius: CGFloat = 20
+        static let cornerRadius: CGFloat = 10
         static let lineWidth: CGFloat = 3
-        static let fontScale: CGFloat = 0.8
+        static let fontScale: CGFloat = 0.7
     }
 }
 
